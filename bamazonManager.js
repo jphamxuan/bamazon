@@ -1,7 +1,14 @@
 var inquirer = require('inquirer');
+var mysql = require('mysql');
 
-var userInput1 = process.argv[2]
-var userInput2 = process.argv[3]
+var connection = mysql.createConnection({
+    host: "localhost",
+    port: 3308,
+    user: "root",
+    password: "root",
+    database: "Bamazon"
+  })
+
 
 inquirer
   .prompt([
@@ -18,7 +25,22 @@ inquirer
     },
   ])
   .then(function(r){
-      if(r.Choice=== 'Post an Item'){
-          console.log('hi')
+      if(r.Choice=== 'View Products for Sale'){
+          showProducts()
       }
   })
+
+  function showProducts(){
+    connection.query('SELECT * FROM products', function(err, res){
+      if (err) throw err;
+      console.log('=================================================');
+      console.log('=================Items in Store==================');
+      console.log('=================================================');
+  
+      for(i=0;i<res.length;i++){
+        console.log(' Item ID: ' + res[i].id + '\n Product Name: ' + res[i].product_name + '\n Price: ' + '$' + res[i].price + '\n Quantity: ' + res[i].stock_quantity + '\n')
+      }
+          console.log('=================================================');
+          
+      })
+  }
